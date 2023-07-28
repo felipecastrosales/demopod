@@ -12,6 +12,33 @@ import 'package:demopod_client/src/protocol/article.dart' as _i3;
 import 'dart:io' as _i4;
 import 'protocol.dart' as _i5;
 
+class _EndpointApp extends _i1.EndpointRef {
+  _EndpointApp(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'app';
+
+  _i2.Future<List<_i3.Article>> getArticles({String? keyword}) =>
+      caller.callServerEndpoint<List<_i3.Article>>(
+        'app',
+        'getArticles',
+        {'keyword': keyword},
+      );
+
+  _i2.Future<bool> addArticle(_i3.Article article) =>
+      caller.callServerEndpoint<bool>(
+        'app',
+        'addArticle',
+        {'article': article},
+      );
+
+  _i2.Future<bool> deleteArticle(int id) => caller.callServerEndpoint<bool>(
+        'app',
+        'deleteArticle',
+        {'id': id},
+      );
+}
+
 class _EndpointExample extends _i1.EndpointRef {
   _EndpointExample(_i1.EndpointCaller caller) : super(caller);
 
@@ -43,13 +70,19 @@ class Client extends _i1.ServerpodClient {
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {
+    app = _EndpointApp(this);
     example = _EndpointExample(this);
   }
+
+  late final _EndpointApp app;
 
   late final _EndpointExample example;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {'example': example};
+  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+        'app': app,
+        'example': example,
+      };
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {};
 }
