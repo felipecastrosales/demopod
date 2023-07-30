@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:demopod_client/demopod_client.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
@@ -8,6 +10,8 @@ import 'package:serverpod_flutter/serverpod_flutter.dart';
 // the default port. You will need to modify this to connect to staging or
 // production servers.
 var client = Client('http://localhost:8080/')
+// var client = Client('10.0.2.2:8000/')
+// var client = Client('192.168.1.21')
   ..connectivityMonitor = FlutterConnectivityMonitor();
 
 void main() {
@@ -67,6 +71,25 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  addArticle() async {
+    try {
+      var article = Article(
+        title: 'flutter serverpod',
+        content: 'flutter and serverpod content',
+        publishedOn: DateTime.now(),
+        isPrime: true,
+      );
+      var result = await client.app.addArticle(article);
+      if (result) {
+        setState(() {
+          _resultMessage = 'Article inserted :)';
+        });
+      }
+    } catch (e, s) {
+      log('Error: $e', stackTrace: s);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,9 +111,14 @@ class MyHomePageState extends State<MyHomePage> {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 16.0),
+              // child: ElevatedButton(
+              //   onPressed: _callHello,
+              //   child: const Text('Send to Server'),
+              // ),
+
               child: ElevatedButton(
-                onPressed: _callHello,
-                child: const Text('Send to Server'),
+                onPressed: addArticle,
+                child: const Text('Send to Server by addArticle'),
               ),
             ),
             _ResultDisplay(
